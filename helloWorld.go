@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"reflect"
 )
-func main()  {
+
+func main() {
 	fmt.Println("Hello, Go!")
 
 	// variables
-	var string1 string 
+	var string1 string
 	string1 = "Esto es una cadena"
 	fmt.Println(string1)
 
@@ -25,7 +26,7 @@ func main()  {
 	fmt.Println(myInt)
 	fmt.Println(myInt - 1)
 
-	fmt.Println(string1,myInt)
+	fmt.Println(string1, myInt)
 
 	fmt.Println(reflect.TypeOf(myInt))
 
@@ -51,11 +52,11 @@ func main()  {
 
 	// control de flujo
 
-	if myInt == 10{
+	if myInt == 10 {
 		fmt.Println("El valor es 10")
-	}else if myInt == 11{
+	} else if myInt == 11 {
 		fmt.Println("El valor es 11")
-	}else{
+	} else {
 		fmt.Println("El valor no es 10")
 	}
 
@@ -84,23 +85,24 @@ func main()  {
 		fmt.Println(myArray[i])
 	}
 
-	for index, value := range myArray{
-		fmt.Println(index,value)
+	for index, value := range myArray {
+		fmt.Println(index, value)
 	}
 
 	fmt.Println(myFuction())
 
 	// Estructura
 
-	type MyStructure struct{
+	type MyStructure struct {
 		name string
 		edad int
 	}
 
-	myStructure := MyStructure{"Nicolas",18}
+	myStructure := MyStructure{"Nicolas", 18}
 	fmt.Println(myStructure)
+
 }
 
-func myFuction() string{
+func myFuction() string {
 	return "My función"
 }
