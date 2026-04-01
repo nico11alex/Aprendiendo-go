@@ -1,22 +1,29 @@
 package main
 
 import "fmt"
-func puedeComprar(dineroAhorrado, precio int)bool{
-	return dineroAhorrado >= precio
+
+type Persona struct {
+	nombre string
+	edad   int
+	dinero int
 }
 
 func main() {
-	nombre := "Nicolas"
-	dineroAhorrado := 3000000
-	carros := []string{"Mustang", "Camaro", "Raptor"}
-	precios := []int{2000000, 100000, 2500000}
 
-	for i,carro := range carros{
-		precio := precios[i]
-		if puedeComprar(dineroAhorrado,precio){
-			fmt.Printf("Felicidades %s tu tienes $%d y puedes comprar un %s por que cuesta $%d\n", nombre, dineroAhorrado, carro, precio)
-		}else {
-			fmt.Printf("%s NO puedes comprar el %s ($%d)\n", nombre, carro, precio)
+	precio := 2000000
+
+	personas := []Persona{
+		{"Nicolas", 18, 2000000},
+		{"Sara", 22, 3000000},
+		{"Jesus", 15, 1500000},
+	}
+
+	for _, persona := range personas {
+		fmt.Printf("%s cuentas con %d a tus %d\n",persona.nombre,persona.dinero,persona.edad)
+		if persona.dinero >= precio{
+			fmt.Printf("Puedes comprar un carro de 2000000\n")
+		}else{
+			fmt.Printf("No puedes comprar un carro de 2000000\n")
 		}
 	}
 
