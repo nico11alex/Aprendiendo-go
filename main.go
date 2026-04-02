@@ -3,28 +3,64 @@ package main
 import "fmt"
 
 type Persona struct {
-	nombre string
-	edad   int
-	dinero int
+	Nombre string
+	Edad   int
+	Dinero int
 }
+
+func esMayorDeEdad(edad int)bool{
+	return edad >=18
+}
+
+func puedeComprar(dinero,precio int)bool{
+	return dinero >= precio
+}
+
 
 func main() {
 
-	precio := 2000000
+	var nombre string
+	var edad int
+	var dinero int
 
-	personas := []Persona{
-		{"Nicolas", 18, 2000000},
-		{"Sara", 22, 3000000},
-		{"Jesus", 15, 1500000},
+	fmt.Println("Escriba su nombre: ")
+	fmt.Scan(&nombre)
+
+	fmt.Println("Escriba su edad: ")
+	_, err := fmt.Scanln(&edad)
+
+	if err != nil {
+		fmt.Println("Error: ingresa un número válido")
+		return
 	}
 
-	for _, persona := range personas {
-		fmt.Printf("%s cuentas con %d a tus %d\n",persona.nombre,persona.dinero,persona.edad)
-		if persona.dinero >= precio{
-			fmt.Printf("Puedes comprar un carro de 2000000\n")
-		}else{
-			fmt.Printf("No puedes comprar un carro de 2000000\n")
-		}
+	fmt.Println("Escriba su dinero ahorrado: ")
+	_,err = fmt.Scanln(&dinero)
+
+	if err != nil {
+		fmt.Println("Error: ingresa un número válido")
+		return
 	}
+
+	precio:=2000000
+
+	personas := Persona{
+		Nombre: nombre,
+		Edad: edad,
+		Dinero: dinero,
+	}
+
+	if !esMayorDeEdad(personas.Edad){
+		fmt.Printf("%s perdon pero no puedes comprar un carro porque tienes %d años y eres menor de edad\n",personas.Nombre,personas.Edad)
+		return
+	}
+
+	if !puedeComprar(personas.Dinero,precio){
+		fmt.Printf("%s perdon pero con tu dinero no te alcanza el carro\n",personas.Nombre)
+		return
+	}
+	
+	fmt.Printf("%s felicidades puedes comprar tu Mustang de 2000000",personas.Nombre)
+
 
 }
