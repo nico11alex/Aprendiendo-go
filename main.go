@@ -1,27 +1,45 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
-func saludo(w http.ResponseWriter, r *http.Request) {
+type Persona struct {
+	Nombre string `json:"nombre"`
+	Edad   int    `json:"edad"`
+}
 
-	nombre := r.URL.Query().Get("nombre")
+type Carro struct {
+	Nombre string `json:"nombre"`
+	Precio int `json:"precio"`
+}
 
-	if nombre == "" {
-		nombre = "Invitado"
+func obtenerPersona(w http.ResponseWriter, r *http.Request) {
+
+	personas := []Persona{
+		{"Nicolas", 20},
+		{"Sara", 22},
+		{"Jesus", 15},
 	}
 
-	fmt.Fprintf(w, "Hola %s bienvenido a mi primera API en go\n", nombre)
-	fmt.Fprintf(w, "El metodo request utilizado es %s\n", r.Method)
-	fmt.Fprintf(w, "La ruta utilizada es %s\n", r.URL)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(personas)
+}
+
+func obtenerCarros(w http.ResponseWriter, r *http.Request){
+
+	carros :=[]Carro{
+		{"Mazda", 114350000},
+		{"Mustang gt", 279990000},
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(carros)
 }
 
 func main() {
-
-	http.HandleFunc("/saludo", saludo)
-	fmt.Println("Servidor en http://localhost:8080")
+	http.HandleFunc("/persona", obtenerPersona)
+	http.HandleFunc("/carros",obtenerCarros)
 	http.ListenAndServe(":8080", nil)
-
 }
