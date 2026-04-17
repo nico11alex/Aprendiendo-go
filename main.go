@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
 )
 
 type Persona struct {
@@ -71,17 +70,28 @@ func imprimirPersona(persona Persona) {
 	fmt.Println("\n=== Datos Técnicos ===")
 	fmt.Printf("Nombre:      %s\n", persona.Nombre)
 	fmt.Printf("Edad:        %d años\n", persona.Edad)
-	resultado,err := determinarCategoriaEdad(persona.Edad)
-	if err != nil{
-		fmt.Println("Error :",err)
-		os.Exit(1)
+	resultado, err := determinarCategoriaEdad(persona.Edad)
+	if err != nil {
+		fmt.Println("Error :", err)
 	}
-	fmt.Printf("Categoria:   %s\n",resultado)
+	fmt.Printf("Categoria:   %s\n", resultado)
 	fmt.Printf("País:        %s\n", persona.Pais)
 	fmt.Printf("Altura:      %.2f m\n", persona.Altura)
 	fmt.Printf("Estudiante:  %t\n", persona.EsEstudiante)
 	imprimirHobbies(persona.Hobbies)
 	fmt.Println("============================")
+}
+
+func cumplirAnios(p *Persona) {
+	p.Edad++
+}
+
+func cambiarNombre(p *Persona, nuevoNombre string) {
+	p.Nombre = nuevoNombre
+}
+
+func agregarHobbyPersona(p *Persona, nuevoHobby string) {
+	p.Hobbies = append(p.Hobbies, nuevoHobby)
 }
 
 func main() {
@@ -97,6 +107,9 @@ func main() {
 	hobbies = agregarHobby(hobbies, "Comer")
 
 	yo := nuevaPersona(nombre, pais, edad, altura, esEstudiante, hobbies)
+	cambiarNombre(&yo, "Jesus")
+	cumplirAnios(&yo)
+	agregarHobbyPersona(&yo, "Correr")
 	imprimirPersona(yo)
 
 	fmt.Println("")
