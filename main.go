@@ -62,7 +62,7 @@ func nuevaPersona(nombre, pais string, edad int, altura float64, esEstudiante bo
 	return persona
 }
 
-func (persona Persona)imprimirInfo() {
+func (persona Persona) ImprimirInfo() {
 	fmt.Println("\n=== Datos Técnicos ===")
 	fmt.Printf("Nombre:      %s\n", persona.Nombre)
 	fmt.Printf("Edad:        %d años\n", persona.Edad)
@@ -70,7 +70,7 @@ func (persona Persona)imprimirInfo() {
 	if err != nil {
 		fmt.Println("Error :", err)
 	}
-	fmt.Printf("Categoria:   %s\n", resultado)
+	fmt.Printf("Categoría:   %s\n", resultado)
 	fmt.Printf("País:        %s\n", persona.Pais)
 	fmt.Printf("Altura:      %.2f m\n", persona.Altura)
 	fmt.Printf("Estudiante:  %t\n", persona.EsEstudiante)
@@ -78,16 +78,49 @@ func (persona Persona)imprimirInfo() {
 	fmt.Println("============================")
 }
 
-func (p *Persona) cumplirAnios() {
+func (p *Persona) CumplirAnios() {
 	p.Edad++
 }
 
-func (p *Persona) cambiarNombre(nuevoNombre string) {
+func (p *Persona) CumplirAniosYFelicitar(){
+	p.Edad++
+	fmt.Printf("¡Feliz cumpleaños, %s! Ahora tienes %d años\n",p.Nombre,p.Edad)
+}
+
+func (p *Persona) CambiarNombre(nuevoNombre string) {
 	p.Nombre = nuevoNombre
 }
 
-func (p *Persona) agregarHobby(nuevoHobby string) {
+func (p *Persona) AgregarHobby(nuevoHobby string) {
 	p.Hobbies = append(p.Hobbies, nuevoHobby)
+}
+
+func (p Persona) NombreCompleto() string {
+	return p.Nombre
+}
+
+func (p Persona) EsUnEstudiante() bool{
+	return p.EsEstudiante
+}
+
+func (p Persona) IMC()float64{
+	peso := (p.Altura * p.Altura) * 22
+	return peso / (p.Altura*p.Altura)
+}
+
+func (p *Persona) AgregarVariosHobbies(hobbies ...string){
+	p.Hobbies = append(p.Hobbies,hobbies...)
+}
+
+func (p *Persona) InfoResumida()(string,int,[]string){
+	return p.Nombre,p.Edad,p.Hobbies
+}
+
+func (p Persona) EsMayorDeEdadEnPais(pais string) bool {
+	if p.Edad >= 18 && pais == p.Pais{
+		return true
+	}
+	return false
 }
 
 func main() {
@@ -101,11 +134,24 @@ func main() {
 	esEstudiante := true
 
 	yo := nuevaPersona(nombre, pais, edad, altura, esEstudiante, hobbies)
-	
-	yo.cumplirAnios()
-	yo.cambiarNombre("Jesus")
-	yo.agregarHobby("Correr")
-	yo.imprimirInfo()
+
+	yo.CumplirAnios()
+	yo.CambiarNombre("Jesus")
+	yo.AgregarHobby("Correr")
+	yo.AgregarVariosHobbies("Viajar","Gimnasio","Musica")
+	yo.ImprimirInfo()
+
+	fmt.Println("Nombre completo:", yo.NombreCompleto())
+	fmt.Println("¿Es estudiante?", yo.EsUnEstudiante())
+	fmt.Printf("IMC aproximado: %.2f\n", yo.IMC())
+
+	yo.CumplirAniosYFelicitar()
+
+	nombre, edad, hobbies = yo.InfoResumida()
+	fmt.Printf("Resumen: %s, %d años, %d hobbies\n", nombre, edad, len(hobbies))
+
+	fmt.Println("¿Es mayor de edad en Colombia?", yo.EsMayorDeEdadEnPais("Colombia"))
+fmt.Println("¿Es mayor de edad en México?", yo.EsMayorDeEdadEnPais("México"))
 
 	fmt.Println("")
 	fmt.Println("Números del 1 al 10")
