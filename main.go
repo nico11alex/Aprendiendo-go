@@ -49,10 +49,6 @@ func imprimirHobbies(hobbies []string) {
 	}
 }
 
-func agregarHobby(hobbies []string, nuevoHobby string) []string {
-	return append(hobbies, nuevoHobby)
-}
-
 func nuevaPersona(nombre, pais string, edad int, altura float64, esEstudiante bool, hobbies []string) Persona {
 	persona := Persona{
 		Nombre:       nombre,
@@ -66,7 +62,7 @@ func nuevaPersona(nombre, pais string, edad int, altura float64, esEstudiante bo
 	return persona
 }
 
-func imprimirPersona(persona Persona) {
+func (persona Persona)imprimirInfo() {
 	fmt.Println("\n=== Datos Técnicos ===")
 	fmt.Printf("Nombre:      %s\n", persona.Nombre)
 	fmt.Printf("Edad:        %d años\n", persona.Edad)
@@ -82,15 +78,15 @@ func imprimirPersona(persona Persona) {
 	fmt.Println("============================")
 }
 
-func cumplirAnios(p *Persona) {
+func (p *Persona) cumplirAnios() {
 	p.Edad++
 }
 
-func cambiarNombre(p *Persona, nuevoNombre string) {
+func (p *Persona) cambiarNombre(nuevoNombre string) {
 	p.Nombre = nuevoNombre
 }
 
-func agregarHobbyPersona(p *Persona, nuevoHobby string) {
+func (p *Persona) agregarHobby(nuevoHobby string) {
 	p.Hobbies = append(p.Hobbies, nuevoHobby)
 }
 
@@ -104,13 +100,12 @@ func main() {
 	altura := 1.80
 	esEstudiante := true
 
-	hobbies = agregarHobby(hobbies, "Comer")
-
 	yo := nuevaPersona(nombre, pais, edad, altura, esEstudiante, hobbies)
-	cambiarNombre(&yo, "Jesus")
-	cumplirAnios(&yo)
-	agregarHobbyPersona(&yo, "Correr")
-	imprimirPersona(yo)
+	
+	yo.cumplirAnios()
+	yo.cambiarNombre("Jesus")
+	yo.agregarHobby("Correr")
+	yo.imprimirInfo()
 
 	fmt.Println("")
 	fmt.Println("Números del 1 al 10")
