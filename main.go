@@ -1,31 +1,24 @@
 package main
 
-import (
-	"fmt"
-	"aprendiendo-go/persona"
-	"aprendiendo-go/utils"
-)
+import "fmt"
+
+type Estudiante struct {
+	Nombre   string
+	Edad     int
+	Promedio float64
+	Activo   bool
+}
 
 func main() {
-	hobbies := []string{"Programar", "Leer", "Baloncesto", "Videojuegos", "Escribir"}
+	yo := Estudiante{
+		Nombre:   "Nicolas",
+		Edad:     18,
+		Promedio: 8.9,
+		Activo:   true,
+	}
 
-	yo := persona.New("Jesús", "Colombia", 19, 1.80, true, hobbies)
+	fmt.Printf("El estudiante %s tiene %d años y un promedio de %f\n",yo.Nombre,yo.Edad,yo.Promedio)
+	yo.Activo = false
+	fmt.Println(yo.Activo)
 
-	yo.CumplirAnios()
-	yo.CambiarNombre("Jesús López")
-	yo.AgregarVariosHobbies("Viajar", "Gimnasio", "Música")
-
-	yo.ImprimirInfo()
-
-	fmt.Println("Nombre completo:", yo.NombreCompleto())
-	fmt.Println("¿Es estudiante?", yo.EsUnEstudiante())
-
-	// Uso de interfaces desde el paquete persona
-	// (tendrás que mover MostrarInformacion y MostrarIdentificacion al paquete persona)
-	
-	utils.ContarNumerosPares()
-	persona.MostrarIdentificacion(yo)
-	persona.MostrarInformacion(yo)
-
-	fmt.Println("\nEstoy aprendiendo Go con paquetes!")
 }
