@@ -2,23 +2,28 @@ package main
 
 import "fmt"
 
-type Estudiante struct {
-	Nombre   string
-	Edad     int
-	Promedio float64
-	Activo   bool
+type Vehiculo struct {
+	Marca   string
+	Modelo string
+	Año int
 }
 
+
 func main() {
-	yo := Estudiante{
-		Nombre:   "Nicolas",
-		Edad:     18,
-		Promedio: 8.9,
-		Activo:   true,
+	vehiculo := Vehiculo{
+		Marca: "Ford",
+		Modelo: "Mustang gtr",
+		Año: 2026,
 	}
 
-	fmt.Printf("El estudiante %s tiene %d años y un promedio de %f\n",yo.Nombre,yo.Edad,yo.Promedio)
-	yo.Activo = false
-	fmt.Println(yo.Activo)
+	vehiculo2 := Vehiculo{} 
+
+	vehiculo2.Marca = "Mazda"
+	vehiculo2.Modelo= "CX30"
+	vehiculo2.Año = 2023
+
+	fmt.Println(vehiculo.Marca,vehiculo.Año)
+	fmt.Println(vehiculo2.Modelo)
+
 
 }
