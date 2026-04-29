@@ -2,28 +2,31 @@ package main
 
 import "fmt"
 
-type Vehiculo struct {
-	Marca   string
-	Modelo string
-	Año int
+type Rectangulo struct{
+	Ancho int
+	Alto int
 }
 
+func(r Rectangulo) Area()int{
+	return r.Alto*r.Ancho
+}
+
+func(r *Rectangulo) Escalar(factor int){
+	if(factor <=0){
+		return
+	}
+	r.Alto *= factor
+	r.Ancho *= factor
+
+}
 
 func main() {
-	vehiculo := Vehiculo{
-		Marca: "Ford",
-		Modelo: "Mustang gtr",
-		Año: 2026,
+	rectangulo := Rectangulo{
+		Ancho: 4,
+		Alto: 3,
 	}
 
-	vehiculo2 := Vehiculo{} 
-
-	vehiculo2.Marca = "Mazda"
-	vehiculo2.Modelo= "CX30"
-	vehiculo2.Año = 2023
-
-	fmt.Println(vehiculo.Marca,vehiculo.Año)
-	fmt.Println(vehiculo2.Modelo)
-
-
+	fmt.Printf("El area del rectangulo es de %d\n",rectangulo.Area())
+	rectangulo.Escalar(2)
+	fmt.Printf("El area del rectangulo es de %d\n",rectangulo.Area())
 }
