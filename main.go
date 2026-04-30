@@ -2,70 +2,34 @@ package main
 
 import "fmt"
 
-type Figura interface{
-	Area() int
+type Imprimible interface {
+	Info() string
 }
 
-type Rectangulo struct{
-	Ancho int
-	Alto int
+type Libro struct {
+	Titulo string
+	Autor  string
 }
 
-type Cuadrado struct{
-	Lado int
+type Pelicula struct {
+	Titulo   string
+	Director string
 }
 
-func ImprimirInformacion(f Figura) {
-    fmt.Printf("El área de esta figura es: %d\n", f.Area())
+func (l Libro) Info() string {
+	return fmt.Sprintf("Libro: %s de %s",l.Titulo,l.Autor)
 }
 
-func(r Rectangulo) Area()int{
-	return r.Alto*r.Ancho
-}
-
-func(c Cuadrado) Area()int{
-	return c.Lado*c.Lado
-}
-
-func(r *Rectangulo) Escalar(factor int){
-	if(factor <=0){
-		return
-	}
-	r.Alto *= factor
-	r.Ancho *= factor
-
-}
-
-func(c *Cuadrado) Escalar(factor int){
-	if(factor <=0){
-		return
-	}
-	c.Lado *= factor
-
+func (p Pelicula) Info() string {
+	return fmt.Sprintf("Pelicula: %s dirigida por %s",p.Titulo,p.Director)
 }
 
 func main() {
-	rectangulo := Rectangulo{
-		Ancho: 4,
-		Alto: 3,
+	libreria := []Imprimible{
+		Libro{Titulo: "Habitos Atomicos", Autor: "James Clear"},
+		Pelicula{Titulo: "Juego de honor", Director: "Tomas Carter"},
 	}
-	cuadrado := Cuadrado{
-		Lado: 5,
+	for _, contenido := range libreria {
+		fmt.Printf("%s\n",contenido.Info())
 	}
-
-	// rectangulo
-
-	fmt.Printf("El area del rectangulo es de %d\n",rectangulo.Area())
-	rectangulo.Escalar(2)
-	fmt.Printf("El area del rectangulo es de %d\n",rectangulo.Area())
-
-	// cuadrado
-
-	fmt.Printf("El area del cuadrado es de %d\n",cuadrado.Area())
-	cuadrado.Escalar(2)
-	fmt.Printf("El area del cuadrado es de %d\n",cuadrado.Area())
-
-	// Figura
-	ImprimirInformacion(rectangulo)
-	ImprimirInformacion(cuadrado)
 }
