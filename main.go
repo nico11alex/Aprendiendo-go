@@ -1,35 +1,39 @@
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "sync"
+    "time"
+)
 
-type Imprimible interface {
-	Info() string
-}
+func trabajador(id int, wg *sync.WaitGroup, resultados chan<- string) {
+    defer wg.Done()
 
-type Libro struct {
-	Titulo string
-	Autor  string
-}
+    fmt.Printf("Trabajador %d empezó\n", id)
+    time.Sleep(time.Duration(id) * 500 * time.Millisecond)
 
-type Pelicula struct {
-	Titulo   string
-	Director string
-}
-
-func (l Libro) Info() string {
-	return fmt.Sprintf("Libro: %s de %s",l.Titulo,l.Autor)
-}
-
-func (p Pelicula) Info() string {
-	return fmt.Sprintf("Pelicula: %s dirigida por %s",p.Titulo,p.Director)
+    mensaje := fmt.Sprintf("Trabajador %d terminó su trabajo", id)
+    
+    resultados <- mensaje   // ← Enviamos el resultado por el channel
 }
 
 func main() {
-	libreria := []Imprimible{
-		Libro{Titulo: "Habitos Atomicos", Autor: "James Clear"},
-		Pelicula{Titulo: "Juego de honor", Director: "Tomas Carter"},
-	}
-	for _, contenido := range libreria {
-		fmt.Printf("%s\n",contenido.Info())
-	}
+    var wg sync.WaitGroup
+    resultados := make(chan string, 3)   // Channel con buffer de 3
+
+    for i := 1; i <= 3; i++ {
+        wg.Add(1)
+        go trabajador(i, &wg, resultados)
+    }
+
+    // Esperamos que todas terminen
+    wg.Wait()
+
+    // Recibimos los resultados
+    fmt.Println("\nResultados recibidos:")
+    for i := 1; i <= 3; i++ {
+        fmt.Println("→", <-resultados)
+    }
+
+    fmt.Println("\n¡Programa finalizado correctamente!")
 }
