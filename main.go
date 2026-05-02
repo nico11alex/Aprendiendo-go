@@ -1,39 +1,43 @@
 package main
 
 import (
-    "fmt"
-    "sync"
-    "time"
+	"fmt"
+	"sync"
+	"time"
 )
 
 func trabajador(id int, wg *sync.WaitGroup, resultados chan<- string) {
-    defer wg.Done()
+	defer wg.Done()
 
-    fmt.Printf("Trabajador %d empezó\n", id)
-    time.Sleep(time.Duration(id) * 500 * time.Millisecond)
+	start := time.Now()
+	fmt.Printf("Trabajador %d empezó\n", id)
 
-    mensaje := fmt.Sprintf("Trabajador %d terminó su trabajo", id)
-    
-    resultados <- mensaje   // ← Enviamos el resultado por el channel
+	time.Sleep(time.Duration(id) * 500 * time.Millisecond)
+
+	duracion := time.Since(start)
+
+	mensaje := fmt.Sprintf("Trabajador %d terminó en %v", id, duracion)
+	resultados <- mensaje
 }
 
 func main() {
-    var wg sync.WaitGroup
-    resultados := make(chan string, 3)   // Channel con buffer de 3
+	var wg sync.WaitGroup
+	resultados := make(chan string, 5)
 
-    for i := 1; i <= 3; i++ {
-        wg.Add(1)
-        go trabajador(i, &wg, resultados)
-    }
+	fmt.Println("Iniciando trabajadores...")
 
-    // Esperamos que todas terminen
-    wg.Wait()
+	for i := 1; i <= 5; i++ {
+		wg.Add(1)
+		go trabajador(i, &wg, resultados)
+	}
 
-    // Recibimos los resultados
-    fmt.Println("\nResultados recibidos:")
-    for i := 1; i <= 3; i++ {
-        fmt.Println("→", <-resultados)
-    }
+	wg.Wait()
+	close(resultados)
 
-    fmt.Println("\n¡Programa finalizado correctamente!")
+	fmt.Println("\n=== Resultados ===")
+	for msg := range resultados {
+		fmt.Println("→", msg)
+	}
+
+	fmt.Println("\n¡Todo terminado!")
 }
