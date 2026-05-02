@@ -3,41 +3,52 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
-func trabajador(id int, wg *sync.WaitGroup, resultados chan<- string) {
-	defer wg.Done()
+func concesionario1(name string, wg *sync.WaitGroup, resultados chan<- string) {
+    defer wg.Done()
 
-	start := time.Now()
-	fmt.Printf("Trabajador %d empezó\n", id)
+    mensaje := fmt.Sprintf("%s tu mustang cuesta $279.990.000 COP en el consecionario Autoland Colombia",name)
 
-	time.Sleep(time.Duration(id) * 500 * time.Millisecond)
-
-	duracion := time.Since(start)
-
-	mensaje := fmt.Sprintf("Trabajador %d terminó en %v", id, duracion)
-	resultados <- mensaje
+    resultados <- mensaje
 }
 
-func main() {
-	var wg sync.WaitGroup
-	resultados := make(chan string, 5)
+func concesionario2(name string, wg *sync.WaitGroup, resultados chan<- string) {
+    defer wg.Done()
 
-	fmt.Println("Iniciando trabajadores...")
+    mensaje := fmt.Sprintf("%s tu mustang cuesta $249.900.000 COP en el consecionario El Roble Motor (Pereira/Medellín/Cali):.",name)
 
-	for i := 1; i <= 5; i++ {
-		wg.Add(1)
-		go trabajador(i, &wg, resultados)
-	}
+    resultados <- mensaje
+}
 
-	wg.Wait()
-	close(resultados)
+func concesionario3(name string, wg *sync.WaitGroup, resultados chan<- string) {
+    defer wg.Done()
 
-	fmt.Println("\n=== Resultados ===")
-	for msg := range resultados {
-		fmt.Println("→", msg)
-	}
+    mensaje := fmt.Sprintf("%s tu mustang cuesta $364.900.000 COP en el consecionario Los Coches",name)
 
-	fmt.Println("\n¡Todo terminado!")
+    resultados <- mensaje
+}
+
+
+func main(){
+    var wg sync.WaitGroup
+    
+    resultados := make(chan string, 3)
+
+    
+    wg.Add(1)
+    go concesionario1("Nicolas",&wg,resultados)
+    wg.Add(1)
+    go concesionario2("Nicolas",&wg,resultados)
+    wg.Add(1)
+    go concesionario3("Nicolas",&wg,resultados)
+    
+    wg.Wait()
+    close(resultados)
+
+    fmt.Println("\nResultados recibidos:")
+    for mesage := range resultados {
+        fmt.Println("→", mesage)
+    }
+    
 }
