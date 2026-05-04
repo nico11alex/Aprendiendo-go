@@ -6,32 +6,39 @@ import (
 	"time"
 )
 
-func trabajador(id int, tareas <-chan string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for i := range tareas {
-		fmt.Printf("Trabajador %d procesando: %s\n", id, i)
-		time.Sleep(500 * time.Millisecond)
-	}
+// FAN-IN
 
+func productor(id int, frases []string, c chan<- string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	var frase string
+	for _, f := range frases {
+		frase = fmt.Sprintf("Producto %d: %s", id, f)
+		c <- frase
+		time.Sleep(100 * time.Millisecond)
+	}
 }
 
 func main() {
-	c := make(chan string, 3)
+
+	c := make(chan string)
+
 	var wg sync.WaitGroup
 
-	wg.Add(1)
-	go trabajador(1, c, &wg)
-	wg.Add(1)
-	go trabajador(2, c, &wg)
-	wg.Add(1)
-	go trabajador(3, c, &wg)
-	tarea := []string{"A", "B", "C", "D", "E"}
+	cadena1 := []string{"Hola", "Mundo", "Go"}
+	cadena2 := []string{"Concurrencia", "es", "poderosa"}
 
-	for _, s := range tarea {
-		c <- s
+	wg.Add(1)
+	go productor(1, cadena1, c, &wg)
+	wg.Add(1)
+	go productor(2, cadena2, c, &wg)
+
+	go func() {
+		wg.Wait()
+		close(c)
+	}()
+
+	for msg := range c {
+		fmt.Println(msg)
 	}
 
-	close(c)
-	wg.Wait()
-	fmt.Println("Todas las tareas completadas.")
 }
