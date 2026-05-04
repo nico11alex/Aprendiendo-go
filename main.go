@@ -1,21 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
-func generarNumeros(n int, c chan int) {
-	for i := 1; i <= n; i++ {
-		c <- i
+func echo(c chan string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for s := range c{
+		fmt.Printf("Eco: %s\n",s)
 	}
-	close(c)
 }
 
 func main() {
-	c := make(chan int)
-	go generarNumeros(5, c)
+	c := make(chan string)
+	var wg sync.WaitGroup
 
+	wg.Add(1)
+	go echo(c, &wg)
 
-	for i := range c{
-		fmt.Println(i)
+	enviar := []string{"Hola", "Mundo", "Go"}
+	for _,s := range enviar{
+		c <- s	
 	}
+	
+	close(c)
+	wg.Wait()
 	fmt.Println("Terminado.")
 }
