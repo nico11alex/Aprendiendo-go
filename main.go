@@ -3,29 +3,35 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
-func echo(c chan string, wg *sync.WaitGroup) {
+func trabajador(id int, tareas <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for s := range c {
-		fmt.Printf("Eco: %s\n", s)
+	for i := range tareas {
+		fmt.Printf("Trabajador %d procesando: %s\n", id, i)
+		time.Sleep(500 * time.Millisecond)
 	}
+
 }
 
 func main() {
-	c := make(chan string)
+	c := make(chan string, 3)
 	var wg sync.WaitGroup
 
-	wg.Add(2)
-	go echo(c, &wg)
-	go echo(c, &wg)
-	enviar := []string{"1", "2"}
-	for i := 0; i <= 10; i++ {
-		for _, s := range enviar {
-			c <-s
-		}
+	wg.Add(1)
+	go trabajador(1, c, &wg)
+	wg.Add(1)
+	go trabajador(2, c, &wg)
+	wg.Add(1)
+	go trabajador(3, c, &wg)
+	tarea := []string{"A", "B", "C", "D", "E"}
+
+	for _, s := range tarea {
+		c <- s
 	}
+
 	close(c)
 	wg.Wait()
-	fmt.Println("Terminado.")
+	fmt.Println("Todas las tareas completadas.")
 }
