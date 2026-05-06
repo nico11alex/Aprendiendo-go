@@ -1,44 +1,52 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"sync"
-	"time"
 )
 
-// FAN-IN
+type Comprable interface {
+	Precio() int
+}
 
-func productor(id int, frases []string, c chan<- string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	var frase string
-	for _, f := range frases {
-		frase = fmt.Sprintf("Producto %d: %s", id, f)
-		c <- frase
-		time.Sleep(100 * time.Millisecond)
+type Mazda struct {
+	Modelo int
+	Valor  int
+}
+
+type ErrorPresupuesto struct{
+	Diferencia int
+}
+
+func (m Mazda) Precio() int {
+	return m.Valor
+}
+
+func RealizarCompra(c Comprable, presupuesto int,e *ErrorPresupuesto) (string, error) {
+	if c.Precio() > presupuesto {
+		Diferencia(c,presupuesto,e) 
+		MensajeError := fmt.Sprintf("Te faltan solo %d meses de ahorro si guardas 2 millones al mes.", e.Diferencia)
+		err := errors.New(MensajeError)
+		return "", err
+	} else {
+		return "Felicidades puedes comprar el auto", nil
+	}
+}
+
+func Diferencia(c Comprable, presupuesto int, e *ErrorPresupuesto){
+	for c.Precio() > presupuesto {
+		presupuesto += 2000000
+		e.Diferencia ++
 	}
 }
 
 func main() {
-
-	c := make(chan string)
-
-	var wg sync.WaitGroup
-
-	cadena1 := []string{"Hola", "Mundo", "Go"}
-	cadena2 := []string{"Concurrencia", "es", "poderosa"}
-
-	wg.Add(1)
-	go productor(1, cadena1, c, &wg)
-	wg.Add(1)
-	go productor(2, cadena2, c, &wg)
-
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-
-	for msg := range c {
-		fmt.Println(msg)
+	mazda := Mazda{Modelo: 2026, Valor: 140000000}
+	errores := ErrorPresupuesto{Diferencia: 0}
+	mensaje, errorCompra := RealizarCompra(mazda, 13000000,&errores)
+	if errorCompra != nil{
+		fmt.Println(errorCompra)
+	}else{
+		fmt.Println(mensaje)
 	}
-
 }
