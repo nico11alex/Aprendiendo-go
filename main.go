@@ -2,24 +2,50 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
-func buscarRespuesta(resultado chan<- string) {
-	time.Sleep(3 * time.Second)
-	resultado <- "Datos encontrados"
-	close(resultado)
+type error interface {
+	Error() string
+}
+
+type ErrorNumeros struct {
+	Valor   int
+	Mensaje string
+}
+
+func (eN *ErrorNumeros) Error() string {
+	switch {
+	case eN.Valor == 0:
+		return fmt.Sprintf("Lo siento pero el segundo valor no puede ser %d", eN.Valor)
+	default:
+		return fmt.Sprintln("Error")
+	}
+}
+
+func division(a int, b int) (resultado int, err error) {
+	if b == 0 {
+		errores := ErrorNumeros{
+			Valor: b,
+		}
+		errores.Mensaje = errores.Error()
+		return 0, fmt.Errorf("Error: %s", errores.Mensaje)
+	} else {
+		resultado := a + b
+		return resultado, nil
+	}
 }
 
 func main() {
-	c := make(chan string)
-	go buscarRespuesta(c)
+	var a int = 1
+	var b int = 0
 
-	select{
-	case msg := <-c :
-		fmt.Printf("Éxito: %s\n",msg)
-	case <-time.After(2*time.Second):
-		fmt.Println("Tiempo agotado. La búsqueda tardó demasiado.")
+	suma, err := division(a, b)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Se cierra el programa")
+		return
 	}
-	fmt.Println("Programa finalizado.")
+	fmt.Println("Todo salio bien")
+	fmt.Println(suma)
+
 }
