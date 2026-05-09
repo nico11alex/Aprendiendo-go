@@ -1,51 +1,41 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type error interface {
-	Error() string
-}
-
-type ErrorNumeros struct {
-	Valor   int
-	Mensaje string
-}
-
-func (eN *ErrorNumeros) Error() string {
+func registrarUsuario(nombre string, edad int) (string, error) {
+	err1 := validarEdad(edad)
+	err2 := validarNombre(nombre)
 	switch {
-	case eN.Valor == 0:
-		return fmt.Sprintf("Lo siento pero el segundo valor no puede ser %d", eN.Valor)
+	case err1 != nil && err2 != nil:
+		return "", fmt.Errorf("Errores: 1.%w,\n2.%w", err1, err2)
+	case err1 != nil:
+		return "", fmt.Errorf("Error: %w", err1)
+	case err2 != nil:
+		return "", fmt.Errorf("Error: %w", err2)
 	default:
-		return fmt.Sprintln("Error")
+		return "Registro exitoso", nil
 	}
 }
 
-func division(a int, b int) (resultado int, err error) {
-	if b == 0 {
-		errores := ErrorNumeros{
-			Valor: b,
-		}
-		errores.Mensaje = errores.Error()
-		return 0, fmt.Errorf("Error: %s", errores.Mensaje)
-	} else {
-		resultado := a + b
-		return resultado, nil
+func validarEdad(edad int) error {
+	if edad < 18 || edad > 100 {
+		return fmt.Errorf("Estas fuera de el rango de edad")
 	}
+	return nil
+}
+
+func validarNombre(nombre string) error {
+	if len(nombre) < 3 {
+		return fmt.Errorf("Perdon pero el nombre esta muy corto")
+	}
+	return nil
 }
 
 func main() {
-	var a int = 1
-	var b int = 0
-
-	suma, err := division(a, b)
+	resultado, err := registrarUsuario("Nicolas", 18)
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println("Se cierra el programa")
 		return
 	}
-	fmt.Println("Todo salio bien")
-	fmt.Println(suma)
-
+	fmt.Println(resultado)
 }
