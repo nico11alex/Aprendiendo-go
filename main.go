@@ -1,41 +1,52 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"sync"
+)
 
-func registrarUsuario(nombre string, edad int) (string, error) {
-	err1 := validarEdad(edad)
-	err2 := validarNombre(nombre)
-	switch {
-	case err1 != nil && err2 != nil:
-		return "", fmt.Errorf("Errores: 1.%w,\n2.%w", err1, err2)
-	case err1 != nil:
-		return "", fmt.Errorf("Error: %w", err1)
-	case err2 != nil:
-		return "", fmt.Errorf("Error: %w", err2)
-	default:
-		return "Registro exitoso", nil
-	}
+type ErrorPermiso struct {
+	Nombre string
 }
 
-func validarEdad(edad int) error {
-	if edad < 18 || edad > 100 {
-		return fmt.Errorf("Estas fuera de el rango de edad")
-	}
-	return nil
+type Resultado struct {
+	Nombre string
+	Err    error
 }
 
-func validarNombre(nombre string) error {
-	if len(nombre) < 3 {
-		return fmt.Errorf("Perdon pero el nombre esta muy corto")
+var ErrorArchivoNoEncontrado = errors.New("Archivo no encontrado:")
+
+func verificarArchivo(wg *sync.WaitGroup,nombre string, res chan<- Resultado) {
+	defer wg.Done()
+	if nombre != "main.go" {
+		res <- Resultado{Err: fmt.Errorf("%w %s", ErrorArchivoNoEncontrado, nombre)}
+		return
 	}
-	return nil
+	res <- Resultado{Nombre: nombre}
 }
 
 func main() {
-	resultado, err := registrarUsuario("Nicolas", 18)
-	if err != nil {
-		fmt.Println(err)
-		return
+	var wg sync.WaitGroup
+	c := make(chan Resultado, 4)
+	archivos := []string{"main.go", "slice.py", "gotes.js", "libro.php"}
+
+	
+	for _, archivo := range archivos {
+		wg.Add(1)
+		go verificarArchivo(&wg,archivo, c)
 	}
-	fmt.Println(resultado)
+
+	wg.Wait()
+	for i := 0; i < 4; i++ {
+		r := <-c
+
+		if errors.Is(r.Err, ErrorArchivoNoEncontrado) {
+			fmt.Println(r.Err)
+		} else {
+			fmt.Println("Archivo encontrado:", r.Nombre)
+		}
+
+	}
+
 }
