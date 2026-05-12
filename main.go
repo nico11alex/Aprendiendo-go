@@ -1,28 +1,44 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func calcularPromedio(numeros []float64) (float64, error) {
-	if len(numeros) == 0 {
-		return 0.0, fmt.Errorf("Error no se puede calcular el promedio de una lista vacía")
+func validarPassword(contraseña string) (bool, error) {
+	if len(contraseña) < 8 {
+		return false, fmt.Errorf("perdon pero la contraseña es muy corta")
 	}
 
-	var suma float64
-	for _, numero := range numeros {
-		suma += numero
+	tieneNumero := false
+	tieneLetraMayuscula := false
+
+	for _, char := range contraseña {
+		if char >= '0' && char <= '9' {
+			tieneNumero = true
+		}
+		if char >= 'A' && char <= 'Z' {
+			tieneLetraMayuscula = true
+		}
 	}
-	
-	promedio := suma / float64(len(numeros))
-	return promedio, nil
+
+	if !tieneNumero {
+		return false, fmt.Errorf("perdon pero la contraseña debe tener un numero")
+	}
+	if !tieneLetraMayuscula {
+		return false, fmt.Errorf("perdon pero la contraseña debe tener una letra en mayuscula")
+	}
+	return true, nil
 }
 
 func main() {
-	numeros := []float64{}
-
-	resultado, err := calcularPromedio(numeros)
+	contraseña := "Nicolas1"
+	resultado, err := validarPassword(contraseña)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(resultado)
+	if resultado {
+		fmt.Println("Contraseña valida")
+	}
+
 }
