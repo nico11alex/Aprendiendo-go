@@ -1,52 +1,28 @@
 package main
 
-import (
-	"errors"
-	"fmt"
-	"sync"
-)
+import "fmt"
 
-type ErrorPermiso struct {
-	Nombre string
-}
-
-type Resultado struct {
-	Nombre string
-	Err    error
-}
-
-var ErrorArchivoNoEncontrado = errors.New("Archivo no encontrado:")
-
-func verificarArchivo(wg *sync.WaitGroup,nombre string, res chan<- Resultado) {
-	defer wg.Done()
-	if nombre != "main.go" {
-		res <- Resultado{Err: fmt.Errorf("%w %s", ErrorArchivoNoEncontrado, nombre)}
-		return
+func calcularPromedio(numeros []float64) (float64, error) {
+	if len(numeros) == 0 {
+		return 0.0, fmt.Errorf("Error no se puede calcular el promedio de una lista vacía")
 	}
-	res <- Resultado{Nombre: nombre}
+
+	var suma float64
+	for _, numero := range numeros {
+		suma += numero
+	}
+	
+	promedio := suma / float64(len(numeros))
+	return promedio, nil
 }
 
 func main() {
-	var wg sync.WaitGroup
-	c := make(chan Resultado, 4)
-	archivos := []string{"main.go", "slice.py", "gotes.js", "libro.php"}
+	numeros := []float64{}
 
-	
-	for _, archivo := range archivos {
-		wg.Add(1)
-		go verificarArchivo(&wg,archivo, c)
+	resultado, err := calcularPromedio(numeros)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-
-	wg.Wait()
-	for i := 0; i < 4; i++ {
-		r := <-c
-
-		if errors.Is(r.Err, ErrorArchivoNoEncontrado) {
-			fmt.Println(r.Err)
-		} else {
-			fmt.Println("Archivo encontrado:", r.Nombre)
-		}
-
-	}
-
+	fmt.Println(resultado)
 }
