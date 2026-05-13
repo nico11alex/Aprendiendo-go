@@ -4,41 +4,47 @@ import (
 	"fmt"
 )
 
-func validarPassword(contraseña string) (bool, error) {
-	if len(contraseña) < 8 {
-		return false, fmt.Errorf("perdon pero la contraseña es muy corta")
-	}
+type ErrorValidacion struct {
+	Campo   string
+	Mensaje string
+}
 
-	tieneNumero := false
-	tieneLetraMayuscula := false
+func (e ErrorValidacion) Error() string {
+	return fmt.Sprintf("%s: %s", e.Campo, e.Mensaje)
+}
 
-	for _, char := range contraseña {
-		if char >= '0' && char <= '9' {
-			tieneNumero = true
+func crearUsuario(username, email string)(string,error){
+	if len(username) < 4 {
+		return "",ErrorValidacion{
+			Campo: "username",
+			Mensaje: fmt.Sprintf("el nombre %s es muy corto para ser creado",username),
 		}
-		if char >= 'A' && char <= 'Z' {
-			tieneLetraMayuscula = true
+	}
+	formatoEmailValido := false
+	for _,char := range email{
+		if char == '@'{
+			formatoEmailValido = true
 		}
 	}
-
-	if !tieneNumero {
-		return false, fmt.Errorf("perdon pero la contraseña debe tener un numero")
+	
+	if !formatoEmailValido{
+		return "",ErrorValidacion{
+			Campo: "email",
+			Mensaje: fmt.Sprintf("el email %s no es valido por que no contiene @.",email),
+		}
 	}
-	if !tieneLetraMayuscula {
-		return false, fmt.Errorf("perdon pero la contraseña debe tener una letra en mayuscula")
-	}
-	return true, nil
+	return "Todo correcto",nil
 }
 
 func main() {
-	contraseña := "Nicolas1"
-	resultado, err := validarPassword(contraseña)
-	if err != nil {
+	username := "Nic"
+	email := "asdwsrwfw"
+
+	resultado, err := crearUsuario(username,email)
+	if err != nil{
 		fmt.Println(err)
 		return
 	}
-	if resultado {
-		fmt.Println("Contraseña valida")
-	}
+	fmt.Println(resultado)
 
 }
