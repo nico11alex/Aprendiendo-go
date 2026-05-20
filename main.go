@@ -2,66 +2,72 @@ package main
 
 import (
 	"fmt"
-	"sync"
-	"time"
 )
 
-type TareaResultado struct {
-	ID        int
-	Tarea     string
-	Resultado string
-	Error     error
-	Tiempo    time.Duration
+type ErrorUserValidation struct {
+	Campo  string
+	Mensaje string
 }
 
-func procesarTarea(id int, c chan<- TareaResultado){
-	start := time.Now()
-	tareaNombre := fmt.Sprintf("Tarea-%d", id)
+func (e ErrorUserValidation) Error() string {
+	return fmt.Sprintf("error en %s\nproblema: %s", e.Campo, e.Mensaje)
+}
 
-	// Simular trabajo
-	time.Sleep(time.Duration(id) * 300 * time.Millisecond)
+func userValidation(userName string, edad int, password string) (string, error) {
+	if err := validateUserName(userName); err != nil {
+		return "", err
+	}
+	if err := validateEdad(edad); err != nil {
+		return "", err
+	}
+	if err := validatePassword(password); err != nil {
+		return "", err
+	}
+	if validateAdmin(userName, password) {
+		return "Bienvenido admin", nil
+	}
+	return "usuario validado de manera correcto", nil
+}
 
-	// Algunas tareas fallan
-	if id == 2 || id == 4 {
-		c <-TareaResultado{
-			ID:     id,
-			Tarea:  tareaNombre,
-			Error:  fmt.Errorf("fallo en la conexión con el servidor"),
-			Tiempo: time.Since(start),
+func validateUserName(userName string) error {
+	if len(userName) < 3 {
+		return ErrorUserValidation{
+			Campo:  "nombre de usuario",
+			Mensaje: "el nombre es muy corto",
 		}
-		return
 	}
+	return nil
+}
 
-	c <-TareaResultado{
-		ID:        id,
-		Tarea:     tareaNombre,
-		Resultado: "Procesado correctamente",
-		Tiempo:    time.Since(start),
+func validateEdad(edad int) error {
+	if edad < 18 {
+		return ErrorUserValidation{
+			Campo:  "edad",
+			Mensaje: "eres menor de edad y no podemos validar tu usuario",
+		}
 	}
+	return nil
+}
+
+func validatePassword(password string) error {
+	if len(password) < 8 {
+		return ErrorUserValidation{
+			Campo:  "contraseña",
+			Mensaje: "la contraseña es muy corta",
+		}
+	}
+	return nil
+}
+
+func validateAdmin(userName string, password string) bool {
+	return userName == "admin" && password == "admin123"
 }
 
 func main() {
-	var wg sync.WaitGroup
-	c := make(chan TareaResultado)
-
-	for i:=1;i <= 5;i++ {
-		wg.Add(1)
-		go func(id int) {
-			defer wg.Done()
-			procesarTarea(id,c)
-		}(i)
+	resultado,err := userValidation("admin",19,"admin1222")
+	if err != nil{
+		fmt.Println(err)
+		return
 	}
-
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-
-	for  res := range c{
-		if res.Error != nil{
-			fmt.Printf("Error en la %s: %v\n",res.Tarea,res.Error)
-		}else{
-			fmt.Printf("La %s se %s con un tiempo de %v\n",res.Tarea,res.Resultado,res.Tiempo)
-		}
-	}
+	fmt.Println(resultado)
 }
